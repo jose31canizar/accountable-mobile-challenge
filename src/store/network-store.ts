@@ -11,8 +11,8 @@ import {
   
   export const NetworkStore = types
     .model({
-      isOffline: types.maybeNull(types.string),
-      isShowingMessage: types.maybeNull(types.string)
+      isOffline: types.optional(types.boolean, false),
+      isShowingMessage: types.optional(types.boolean, false),
     })
     .actions(self => {
       const changeInfo = (data: SnapshotIn<typeof NetworkStore>) => {
@@ -40,13 +40,11 @@ import {
       return { clear };
     });
   
-  export const networkStore = NetworkStore.create({});
-  
-  onSnapshot(networkStore, snapshot => {
-    // storage.set('network.store', JSON.stringify(snapshot));
-  });
-  
-  type NetworkStoreType = typeof networkStore;
-  
-  export type {NetworkStoreType};
-  
+    export const networkStore = NetworkStore.create({
+      isOffline: false,
+      isShowingMessage: false,
+    });
+    
+    type NetworkStoreType = typeof networkStore;
+    
+    export type {NetworkStoreType};

@@ -1,6 +1,6 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
-import { DevSettings, LogBox, NativeModules, View } from 'react-native';
+import { DevSettings, LogBox } from 'react-native';
 import { TabNavigator } from 'src/navigation';
 import { MainStackParamList } from 'src/types/navigation';
 import { StoreContext } from 'src/context';
@@ -26,9 +26,9 @@ import { CoinDetail } from 'src/screens';
 LogBox.ignoreAllLogs(true)
 
 if (__DEV__) {
-  Reactotron.configure({}) // controls connection & communication settings
-    .useReactNative() // add all built-in react native plugins
-    .connect(); // let's connect!
+  Reactotron.configure({})
+    .useReactNative()
+    .connect();
 }
 
 const Stack = createNativeStackNavigator<MainStackParamList>();
@@ -68,21 +68,22 @@ function App(): React.JSX.Element {
   }, []);
 
   const onStateChange = async () => {
-    // if (store.network.isOffline && !store.network.isShowingMessage) {
-    //   const result = await NetInfo.fetch();
-    //   if (result?.isInternetReachable === false) {
-    //     showMessage({
-    //       message: "Oh no! Looks like we've lost connection 😔",
-    //       type: 'warning',
-    //       style: { backgroundColor: palette.error },
-    //       autoHide: false,
-    //       onPress: () => {
-    //         store.network.set('isShowingMessage', false);
-    //       },
-    //     });
-    //     store.network.set('isShowingMessage', true);
-    //   }
-    // }
+    if (store.network.isOffline && !store.network.isShowingMessage) {
+      const result = await NetInfo.fetch();
+      console.log(result)
+      if (result?.isInternetReachable === false) {
+        showMessage({
+          message: "Oh no! Looks like we've lost connection 😔",
+          type: 'warning',
+          style: { backgroundColor: palette.error },
+          autoHide: false,
+          onPress: () => {
+            store.network.set('isShowingMessage', false);
+          },
+        });
+        store.network.set('isShowingMessage', true);
+      }
+    }
     const currentRouteName = getScreenName(
       navigationRef.current.getRootState(),
     );
@@ -111,9 +112,6 @@ function App(): React.JSX.Element {
           onStateChange={onStateChange}
         >
           <Stack.Navigator
-            screenOptions={{
-              // headerShown: false,
-            }}
           >
             <Stack.Screen
               options={({ route, navigation }) => ({
@@ -121,18 +119,15 @@ function App(): React.JSX.Element {
               })}
               name="HomeTab"
               component={TabNavigator}
-            >
-
-            </Stack.Screen>
+            />
             <Stack.Screen
               options={({ route, navigation }) => ({
                 title: route.params.title
               })}
               name="CoinDetail"
               component={CoinDetail}
-            ></Stack.Screen>
+            />
           </Stack.Navigator>
-          {/* <View style={{ flex: 1, height: 100, width: '100%', backgroundColor: 'green' }}></View> */}
           <FlashMessage
             MessageComponent={FlashBox}
             autoHide

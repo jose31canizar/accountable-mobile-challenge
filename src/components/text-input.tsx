@@ -1,4 +1,4 @@
-import React, {LegacyRef, useState} from 'react';
+import React, { LegacyRef, useState } from 'react';
 import {
   Appearance,
   TextInput as RNTextInput,
@@ -6,9 +6,9 @@ import {
   TextInputProps,
   ViewStyle,
 } from 'react-native';
-import {palette} from 'src/theme';
-import {RFValue} from 'src/utils/font';
-import { Box, Text} from './index'
+import { palette } from 'src/theme';
+import { RFValue } from 'src/utils/font';
+import { Box, Text } from './index'
 
 interface YTextInputProps extends ViewStyle, TextInputProps {
   style?: ViewStyle;
@@ -63,7 +63,7 @@ export default React.forwardRef(function (
   return (
     <Box
       justifyContent="center"
-      {...(flexEnabled ? {flex: 1} : {})}
+      {...(flexEnabled ? { flex: 1 } : {})}
     >
       <RNTextInput
         ref={ref}
@@ -75,12 +75,12 @@ export default React.forwardRef(function (
           {
             paddingHorizontal: textInputPadding,
             paddingVertical: textInputPadding,
-            backgroundColor: rest.backgroundColor || palette.white,
+            backgroundColor: rest.backgroundColor || palette.black10,
             fontSize: RFValue(16),
             borderRadius: 8,
           },
           focused ? focusedStyle : {},
-          props.enumerated ? {paddingLeft: 58} : {},
+          props.enumerated ? { paddingLeft: 58 } : {},
           style,
         ]}
         keyboardAppearance={

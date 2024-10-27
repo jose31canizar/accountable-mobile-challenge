@@ -1,7 +1,7 @@
 module.exports = function (api) {
   api.cache(false); // babel caches old env variables when switching envs
   return {
-    presets: ['module:metro-react-native-babel-preset'],
+    "presets": ["@react-native/babel-preset"],
     overrides: [{
       "plugins": [
         ["@babel/plugin-transform-private-methods", {

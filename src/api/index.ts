@@ -71,10 +71,18 @@ class ApiBase {
       }
     };
 
+    getCoinInfo = async ({ id }) => {
+      return await this.retrieve(`coins/${id}`)
+    }
+
     getCoins = async ({ page = 1, limit = 10}: paginationProps
       ): Promise<any> => {
         return await this.retrieve(`/coins?page=${page}&limit=${limit}`);
       };
+
+    searchCoins = async ({ query }) => {
+      return await this.retrieve(`/search?query=${query}`)
+    }
   }
   
   const API = new ApiBase();
