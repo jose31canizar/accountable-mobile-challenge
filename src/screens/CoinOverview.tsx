@@ -9,6 +9,7 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import { StoreContext } from 'src/context';
 import { CoinItemProps } from "components/list-item";
 import { showMessage } from "react-native-flash-message";
+import { clearData } from "src/utils/storage";
 
 const INITIAL_PAGE = 0;
 
@@ -20,6 +21,7 @@ type OverviewNavigationProps = CompositeScreenProps<
 export interface paginationProps {
   page?: number;
   limit?: number;
+  forceRefresh?: boolean;
 }
 
 interface RenderItemProps {
@@ -51,13 +53,14 @@ export default observer(function ({
 
   const { store } = useContext(StoreContext)
   const [coins, setCoins] = useState([])
-  const [paginationCounter, setPaginationCounter] = useState(0)
+  const [paginationCounter, setPaginationCounter] = useState(store.coin.coinMap.size / 10)
   const [isListRefreshing, setRefreshing] = useState(false)
 
-  const fetchCoins = useCallback(async ({ page }: paginationProps) => {
+  const fetchCoins = useCallback(async ({ page, enableCache }: paginationProps) => {
     try {
       setRefreshing(true)
-      const newCoins = await store.coin.fetchCoins({ page })
+      console.log(enableCache)
+      const newCoins = await store.coin.fetchCoins({ page, enableCache })
       setCoins([...coins, ...newCoins])
       setPaginationCounter(paginationCounter + 1)
     } catch (err) {
@@ -68,13 +71,14 @@ export default observer(function ({
   }, [coins, paginationCounter])
 
   useEffect(() => {
-    fetchCoins({ page: INITIAL_PAGE })
+    fetchCoins({ page: INITIAL_PAGE, enableCache: true })
   }, [])
 
 
-  const onRefresh = () => {
+  const onRefresh = async () => {
     setPaginationCounter(INITIAL_PAGE)
     setCoins([])
+    await clearData()
     fetchCoins({ page: INITIAL_PAGE })
   }
 

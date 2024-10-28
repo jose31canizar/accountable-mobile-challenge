@@ -81,7 +81,7 @@ class ApiBase {
       };
 
     searchCoins = async ({ query }) => {
-      return await this.retrieve(`/search?query=${query}`)
+      return await this.retrieve(`/coins/search?query=${query}`)
     }
   }
   

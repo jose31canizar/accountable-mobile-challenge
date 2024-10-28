@@ -8,3 +8,5 @@ export {default as Pressable} from './pressable';
 export {default as SafeAreaView} from './safe-area-view';
 export {default as List} from './list';
 export {default as FlashBox} from './flash-box';
+export {default as Button} from './button';
+export { default as SearchBar } from './search-bar'

@@ -14,7 +14,6 @@ export const palette = {
   black10: '#E5E5E5',
   black5: '#F7F7F7',
   warning: '#FEF3E5',
-  errorBackground: '#F8EAE9',
 };
 
 export const spacingMetrics = {
@@ -49,6 +48,18 @@ const theme = createTheme({
       lineHeight: 16,
       fontWeight: '400',
     },
+    primary: {
+      fontSize: RFValue(14),
+      color: 'black',
+      fontFamily: 'Inter-Medium',
+      fontWeight: '500',
+    },
+    primaryDisabled: {
+      color: 'black30',
+    },
+    primaryPressed: {
+      color: 'black',
+    },
   },
   buttonVariants: {
     defaults: {
@@ -57,7 +68,16 @@ const theme = createTheme({
       paddingVertical: 'm',
       alignItems: 'center',
       alignSelf: 'stretch',
-    }
+    },
+    primary: {
+      backgroundColor: 'primary',
+    },
+    primaryPressed: {
+      backgroundColor: 'secondary',
+    },
+    primaryDisabled: {
+      backgroundColor: 'black10',
+    },
   },
 });
 

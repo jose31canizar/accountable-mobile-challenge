@@ -8,9 +8,10 @@ import {
   types,
 } from 'mobx-state-tree';
 import API from 'src/api'
+import { transformCoins } from 'src/utils/coin';
 import { storage } from './mmk-store';
 
-interface CoinResult {
+export interface CoinResult {
   Id: string;
   CoinName: string;
   Symbol: string;
@@ -40,10 +41,22 @@ export const CoinStore = types
     return {changeInfo};
   })
   .actions(self => {
-    const fetchCoins = flow(function*({ page }) {
+    const queryCoins = flow(function*({ query }) {
+      let coinResult: CoinResult[]
+      try {
+        coinResult = yield API.searchCoins({ query })
+        } catch(err) {
+          console.log(err)
+          throw err;
+        }
+        console.log(coinResult.length)
+      return transformCoins(coinResult)
+    })
+
+    const fetchCoins = flow(function*({ page, enableCache }) {
       let coinResult: CoinResult[]
 
-      if(self.coinMap.size) {
+      if(self.coinMap.size && enableCache) {
         return Array.from(self.coinMap.values())
       }
 
@@ -69,20 +82,13 @@ export const CoinStore = types
           throw err;
         }
 
-      return coinResult.map((coin: CoinResult) => ({
-        id: Number(coin.Id),
-        name: coin.CoinName,
-        symbol: coin.Symbol,
-        currentUSDPrice: 0,
-        marketCapRank: 0,
-        dailyPriceChangePercentage: coin.FakePriceChangePercentage24h,
-        weeklyPriceChangePercentage: coin.FakePriceChangePercentage7d
-      }))
+      return transformCoins(coinResult)
     })
 
     const init = flow(function* () {
       const rehydratedStore = storage.getString('coin.store')
       if (rehydratedStore) {
+        console.log('count', Object.entries(JSON.parse(rehydratedStore).coinMap)?.length)
         applySnapshot(self, JSON.parse(rehydratedStore));
       }
     });
@@ -102,7 +108,7 @@ export const CoinStore = types
       });
     };
 
-    return {init, clear, fetchCoins};
+    return {init, clear, fetchCoins, queryCoins};
   });
 
 export const coinStore = CoinStore.create({});

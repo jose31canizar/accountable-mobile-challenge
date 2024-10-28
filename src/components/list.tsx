@@ -19,12 +19,6 @@ interface ListProps {
 export default function ({ data, renderItem, estimatedItemSize = 200, onRefresh, refreshing, onEndReached }: ListProps) {
   return <FlashList
     onEndReachedThreshold={0.2}
-    refreshControl={
-      <RefreshControl
-        refreshing={refreshing}
-        onRefresh={onRefresh}
-      />
-    }
     contentContainerStyle={{
       backgroundColor: palette.primary,
     }}
@@ -35,8 +29,10 @@ export default function ({ data, renderItem, estimatedItemSize = 200, onRefresh,
         alignItems="flex-start"
         padding='s'
         backgroundColor="primary"
-      >
-        <Text variant='title' color='black'>Cryptocurrencies</Text>
+      >{
+          refreshing ? <Text variant='title' color='black'>Loading...</Text> :
+            <Text variant='title' color='black'>Cryptocurrencies</Text>
+        }
       </Box>
     }
     data={data}
