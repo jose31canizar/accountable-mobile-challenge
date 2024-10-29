@@ -1,21 +1,27 @@
 import React from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
-import { Box, Text, DetailItem, Pressable } from './index';
+import { Star } from 'src/icons';
+import { Box, Text, DetailItem, Pressable, Button } from './index';
 
 export interface CoinItemProps {
   id: string;
   name: string;
   symbol: string;
+  displaySymbol: string;
   currentUSDPrice: number;
-  marketCapRank: number;
-  dailyPriceChangePercent: number;
-  weeklyPriceChangePercent: number;
+  marketCap: number;
+  dailyPriceChangePercentage: number;
+  totalDailyVolume: number;
+  highDay: number;
+  lowDay: number;
 }
 
 interface ListItemProps extends StyleProp<any>, CoinItemProps {
+  onPress: () => void;
+  onFavoritePress: () => void;
   style?: ViewStyle;
 }
-export default function ({ onPress, name, symbol, currentUSDPrice, marketCapRank, dailyPriceChangePercent, weeklyPriceChangePercent, style, ...rest }: ListItemProps) {
+export default function ({ onPress, onFavoritePress, isSaved, name, symbol, displaySymbol, currentUSDPrice, marketCap, dailyPriceChangePercentage, totalDailyVolume, highDay, lowDay, style, ...rest }: ListItemProps) {
   return (
     <Pressable
       flex={1}
@@ -26,12 +32,19 @@ export default function ({ onPress, name, symbol, currentUSDPrice, marketCapRank
       borderRadius={16}
       {...rest}
       onPress={onPress}>
-      <DetailItem value={name} titleVariant="title" />
-      <DetailItem title="Symbol" value={symbol} />
+      <Box flexDirection='row' justifyContent='space-between' >
+        <DetailItem value={name} titleVariant="title" />
+        <Button onPress={onFavoritePress} variant='primary' backgroundColor='black10'>
+          <Star fillColor={isSaved ? "#EB9999" : "none"} />
+        </Button>
+      </Box>
+      <DetailItem title="Symbol" value={displaySymbol} />
       <DetailItem title="Current USD Price" value={currentUSDPrice} />
-      <DetailItem title="Market Cap Rank" value={marketCapRank} />
-      <DetailItem title="Daily Price Percentage Change" value={dailyPriceChangePercent} />
-      <DetailItem title="Weekly Price Percentage Change" value={weeklyPriceChangePercent} />
+      <DetailItem title="Market Cap" value={marketCap} />
+      <DetailItem title="Daily Price Percentage Change" value={dailyPriceChangePercentage} />
+      <DetailItem title="Total Daily Volume" value={totalDailyVolume} />
+      <DetailItem title="Highest Value Today" value={highDay} />
+      <DetailItem title="Lowest Value Today" value={lowDay} />
     </Pressable>
   );
 }

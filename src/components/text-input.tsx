@@ -34,7 +34,6 @@ interface YTextInputProps extends ViewStyle, TextInputProps {
   flexEnabled?: boolean;
   textInputPadding?: number;
   enumeratedPaddingTop?: number;
-  autoCapitalize?: AutoCapi
 }
 export default React.forwardRef(function (
   props: YTextInputProps,
@@ -49,7 +48,6 @@ export default React.forwardRef(function (
     onBlurHandler,
     textInputPadding = 16,
     enumeratedPaddingTop = 12,
-    autoCapitalize,
     ...rest
   } = props;
   const [focused, setFocused] = useState(false);
@@ -82,7 +80,6 @@ export default React.forwardRef(function (
         onBlur={onBlur}
         value={value}
         allowFontScaling={false}
-        autoCapitalize={autoCapitalize}
         style={[
           {
             paddingHorizontal: textInputPadding,

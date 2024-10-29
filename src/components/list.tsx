@@ -11,7 +11,7 @@ interface ListProps {
   estimatedItemSize?: number;
   onRefresh?: () => void;
   onEndReached?: () => void;
-  refreshing: boolean;
+  refreshing?: boolean;
 }
 
 

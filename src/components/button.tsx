@@ -56,7 +56,6 @@ const Button = ({
                     flexDirection="row"
                     alignItems="center"
                     justifyContent="center"
-                    backgroundColor='black5'
                     borderRadius={16}
                     height={50}
                 >

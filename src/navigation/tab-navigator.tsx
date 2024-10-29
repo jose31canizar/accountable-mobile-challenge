@@ -18,8 +18,8 @@ import {
   Pressable,
   SafeAreaView
 } from 'src/components';
-import { Coin, Search } from 'src/icons';
-import { CoinOverview, SearchList } from 'src/screens';
+import { Coin, Search, Star } from 'src/icons';
+import { CoinOverview, Favorites, SearchList } from 'src/screens';
 import { palette } from 'src/theme';
 import { MainStackParamList } from 'src/types/navigation';
 
@@ -42,6 +42,14 @@ const TAB_ICONS = (
       color={palette.primary}
     />
   ),
+  Favorites: (
+    <Star
+      size={size}
+      selected={isFocused}
+      disabled={false}
+      color={palette.primary}
+    />
+  )
 });
 
 type TabbarProps = {
@@ -72,6 +80,10 @@ export default observer(function ({ route }: MainTabProps) {
       <Tab.Screen
         name="SearchList"
         component={SearchList}
+      />
+      <Tab.Screen
+        name="Favorites"
+        component={Favorites}
       />
     </Tab.Navigator>
   );
@@ -148,6 +160,13 @@ function TabBar({ state, descriptors, navigation }: TabbarProps) {
         state={state}
         route={state.routes[1]}
         index={1}
+      />
+      <TabItem
+        descriptors={descriptors}
+        navigation={navigation}
+        state={state}
+        route={state.routes[2]}
+        index={2}
       />
     </SafeAreaView>
   );

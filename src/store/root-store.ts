@@ -21,5 +21,4 @@ const RootStore = types
     return {clear};
   });
 
-// @ts-ignore
 export default RootStore;

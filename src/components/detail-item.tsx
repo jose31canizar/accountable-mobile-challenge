@@ -1,6 +1,7 @@
 import { ResponsiveValue } from '@shopify/restyle';
 import React from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
+import { formatFiatValue } from 'src/utils/currency';
 import { Box, Text } from './index';
 
 interface DetailProps extends StyleProp<any> {
@@ -8,8 +9,9 @@ interface DetailProps extends StyleProp<any> {
   value: string | number;
   style?: ViewStyle;
   titleVariant?: ResponsiveValue<"title" | "subtitle" | "caption", {}>;
+  symbol?: string;
 }
-export default function ({ title, value, titleVariant = 'subtitle', style, ...rest }: DetailProps) {
+export default function ({ title, value, titleVariant = 'subtitle', symbol = "$", style, ...rest }: DetailProps) {
   return (
     <Box
       backgroundColor="black10"
@@ -18,7 +20,11 @@ export default function ({ title, value, titleVariant = 'subtitle', style, ...re
       justifyContent='space-between'
       {...rest}>
       {title ? <Text variant={titleVariant} color="black">{title}</Text> : null}
-      <Text variant={titleVariant} color="black">{value}</Text>
+      <Box flexDirection='row'>
+        {typeof value === 'number' ? <Text variant={titleVariant} color='black'>{symbol}</Text> : null}
+        <Text variant={titleVariant} color="black">{typeof value === 'number' ? formatFiatValue(`${value}`) : value}</Text>
+      </Box>
+
     </Box>
   );
 }

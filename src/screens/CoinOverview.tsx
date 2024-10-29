@@ -10,6 +10,8 @@ import { StoreContext } from 'src/context';
 import { CoinItemProps } from "components/list-item";
 import { showMessage } from "react-native-flash-message";
 import { clearData } from "src/utils/storage";
+import { ObservableMap } from "mobx";
+import { CoinResult } from "src/store/coin-store";
 
 const INITIAL_PAGE = 0;
 
@@ -21,7 +23,7 @@ type OverviewNavigationProps = CompositeScreenProps<
 export interface paginationProps {
   page?: number;
   limit?: number;
-  forceRefresh?: boolean;
+  enableCache?: boolean;
 }
 
 interface RenderItemProps {
@@ -29,20 +31,32 @@ interface RenderItemProps {
 }
 
 interface RenderItemGeneratorProps {
-  onPress: ({ id, name, symbol: string }) => void
+  favorites?: ObservableMap<number, CoinResult>;
+  onPress: ({ id, name, symbol: string }) => void;
+  onFavoritePress: ({ id }) => void;
 }
 
-const renderItem = ({ onPress }: RenderItemGeneratorProps) => (props: RenderItemProps) => {
-  const { id, name, symbol, currentUSDPrice, marketCapRank, dailyPriceChangePercent, weeklyPriceChangePercent } = props.item;
+export const renderItem = ({ favorites, onPress, onFavoritePress }: RenderItemGeneratorProps) => (props: RenderItemProps) => {
+  const { id, name, symbol, displaySymbol, currentUSDPrice, marketCap, dailyPriceChangePercentage, highDay, lowDay, totalDailyVolume } = props.item;
+
+  const isSaved = () => {
+    return !favorites || favorites?.has(Number(id))
+  }
+
   return <ListItem
     onPress={() => onPress({ id, name, symbol })}
+    onFavoritePress={() => onFavoritePress({ id })}
+    isSaved={isSaved()}
     id={id}
     name={name}
     symbol={symbol}
+    displaySymbol={displaySymbol}
     currentUSDPrice={currentUSDPrice}
-    marketCapRank={marketCapRank}
-    dailyPriceChangePercent={dailyPriceChangePercent}
-    weeklyPriceChangePercent={weeklyPriceChangePercent}
+    marketCap={marketCap}
+    dailyPriceChangePercentage={dailyPriceChangePercentage}
+    totalDailyVolume={totalDailyVolume}
+    highDay={highDay}
+    lowDay={lowDay}
   />
 }
 
@@ -59,7 +73,6 @@ export default observer(function ({
   const fetchCoins = useCallback(async ({ page, enableCache }: paginationProps) => {
     try {
       setRefreshing(true)
-      console.log(enableCache)
       const newCoins = await store.coin.fetchCoins({ page, enableCache })
       setCoins([...coins, ...newCoins])
       setPaginationCounter(paginationCounter + 1)
@@ -92,6 +105,14 @@ export default observer(function ({
     navigation.navigate('CoinDetail', { title: `${name} (${symbol})`, id })
   }
 
+  const onFavoritePress = ({ id }) => {
+    if (store.coin.favorites.has(id)) {
+      store.coin.removeCoin({ id })
+    } else {
+      store.coin.saveCoin({ id })
+    }
+  }
+
   return <Box
     flex={1}
     justifyContent="flex-start"
@@ -101,7 +122,7 @@ export default observer(function ({
     <SafeAreaView flex={1} backgroundColor="primary">
       <List
         data={coins}
-        renderItem={renderItem({ onPress: onItemPress })}
+        renderItem={renderItem({ onPress: onItemPress, onFavoritePress, favorites: store.coin.favorites })}
         onRefresh={onRefresh}
         onEndReached={onEndReached}
         refreshing={isListRefreshing}

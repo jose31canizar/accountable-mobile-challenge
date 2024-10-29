@@ -70,7 +70,6 @@ function App(): React.JSX.Element {
   const onStateChange = async () => {
     if (store.network.isOffline && !store.network.isShowingMessage) {
       const result = await NetInfo.fetch();
-      console.log(result)
       if (result?.isInternetReachable === false) {
         showMessage({
           message: "Oh no! Looks like we've lost connection 😔",

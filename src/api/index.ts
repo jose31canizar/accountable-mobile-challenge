@@ -3,6 +3,7 @@ import {
     API_URL
   } from '@env';
 import { paginationProps } from "src/screens/CoinOverview";
+import { CoinHistoryProps } from "src/store/coin-store";
 
   const NETWORK_REQUEST_TIMEOUT_MESSAGE = "Network request timed out"
 
@@ -71,8 +72,12 @@ class ApiBase {
       }
     };
 
-    getCoinInfo = async ({ id }) => {
-      return await this.retrieve(`coins/${id}`)
+    getCoinHistory = async ({ symbol, currency, timeframe, limit}: CoinHistoryProps) => {
+      return await this.retrieve(`coins/${symbol}/history?currency=${currency}&timeframe=${timeframe}&limit=${limit}`)
+    }
+
+    getCoinInfo = async ({ currency, symbol }) => {
+      return await this.retrieve(`coins/${symbol}?currency=${currency}`)
     }
 
     getCoins = async ({ page = 1, limit = 10}: paginationProps

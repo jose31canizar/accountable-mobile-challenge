@@ -12,40 +12,15 @@ import { showMessage } from "react-native-flash-message";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import { DEVICE_WIDTH } from "src/utils/dimensions";
 import { palette } from "src/theme";
+import { renderItem } from "./CoinOverview";
 
 type OverviewNavigationProps = CompositeScreenProps<
     BottomTabScreenProps<HomeTabParamList, 'CoinOverview'>,
     NativeStackScreenProps<MainStackParamList>
 >;
 
-export interface paginationProps {
-    page?: number;
-    limit?: number;
-}
-
-interface RenderItemProps {
-    item: CoinItemProps;
-}
-
-interface RenderItemGeneratorProps {
-    onPress: ({ id, name, symbol: string }) => void
-}
-
 const INPUT_PLACEHOLDER = "Search a crypto coin..."
 
-const renderItem = ({ onPress }: RenderItemGeneratorProps) => (props: RenderItemProps) => {
-    const { id, name, symbol, currentUSDPrice, marketCapRank, dailyPriceChangePercent, weeklyPriceChangePercent } = props.item;
-    return <ListItem
-        onPress={() => onPress({ id, name, symbol })}
-        id={id}
-        name={name}
-        symbol={symbol}
-        currentUSDPrice={currentUSDPrice}
-        marketCapRank={marketCapRank}
-        dailyPriceChangePercent={dailyPriceChangePercent}
-        weeklyPriceChangePercent={weeklyPriceChangePercent}
-    />
-}
 
 export default observer(function ({
     navigation,
@@ -90,6 +65,14 @@ export default observer(function ({
         setQuery(value)
     }
 
+    const onFavoritePress = ({ id }) => {
+        if (store.coin.favorites.has(id)) {
+            store.coin.removeCoin({ id })
+        } else {
+            store.coin.saveCoin({ id })
+        }
+    }
+
     return <Box
         flex={1}
         justifyContent="flex-start"
@@ -110,7 +93,7 @@ export default observer(function ({
             />
             <List
                 data={coins}
-                renderItem={renderItem({ onPress: onItemPress })}
+                renderItem={renderItem({ onPress: onItemPress, onFavoritePress, favorites: store.coin.favorites })}
                 onRefresh={onRefresh}
                 refreshing={isListRefreshing}
             />
