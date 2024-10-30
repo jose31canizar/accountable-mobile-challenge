@@ -15,11 +15,11 @@ import {
       isShowingMessage: types.optional(types.boolean, false),
     })
     .actions(self => {
-      const changeInfo = (data: SnapshotIn<typeof NetworkStore>) => {
-        applySnapshot(self, data);
+      const set = (key, value) => {
+        self[key] = value;
       };
   
-      return {changeInfo};
+      return {set};
     })
     .actions(self => {
       const clear = () => {

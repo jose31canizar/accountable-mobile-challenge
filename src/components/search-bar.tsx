@@ -20,6 +20,7 @@ export default function ({ query, onChangeText, placeholder, onSearch, error, di
                 style={{ marginTop: 8, marginBottom: 8 }}
                 placeholder={placeholder}
                 maxLength={38}
+                //@ts-ignore
                 autoCapitalize={autoCapitalize}
                 autoFocus
                 returnKeyType="search"

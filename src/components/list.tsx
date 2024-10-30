@@ -6,6 +6,7 @@ import { keyExtractor } from 'src/utils/list';
 import { Box, Text } from './index'
 
 interface ListProps {
+  extraData?: any[];
   data: any[];
   renderItem: (arg0: any) => React.JSX.Element;
   estimatedItemSize?: number;
@@ -16,8 +17,9 @@ interface ListProps {
 
 
 
-export default function ({ data, renderItem, estimatedItemSize = 200, onRefresh, refreshing, onEndReached }: ListProps) {
+export default function ({ extraData, data, renderItem, estimatedItemSize = 200, onRefresh, refreshing, onEndReached }: ListProps) {
   return <FlashList
+    extraData={extraData}
     onEndReachedThreshold={0.2}
     contentContainerStyle={{
       backgroundColor: palette.primary,

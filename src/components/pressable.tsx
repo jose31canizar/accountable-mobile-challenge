@@ -33,9 +33,8 @@ const restyleFunctions = composeRestyleFunctions<Theme, RestyleProps>([
 ]);
 
 
-export default function ({ children, ...rest }: PropsWithChildren<PressableProps>) {
+export default function ({ children, onPress, ...rest }: PropsWithChildren<PressableProps>) {
     const props = useRestyle(
-        // @ts-ignore
         restyleFunctions, rest);
 
     return <RNPressable {...props}>{children}</RNPressable>

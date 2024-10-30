@@ -15,7 +15,7 @@ import {
     useRestyle,
 } from '@shopify/restyle';
 import React from 'react';
-import { Pressable, ViewStyle } from 'react-native';
+import { AccessibilityProps, Pressable, ViewStyle } from 'react-native';
 import theme, { palette, Theme } from 'src/theme';
 import { Box, Text } from './index'
 
@@ -27,6 +27,7 @@ export interface ButtonProps
     BorderProps<Theme>,
     LayoutProps<Theme>,
     SpacingProps<Theme>,
+    AccessibilityProps,
     ColorProps<Theme> {
     onPress: () => void;
     disabled?: boolean;

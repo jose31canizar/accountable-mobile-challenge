@@ -26,7 +26,7 @@ export default observer(function ({ navigation, route }: Props) {
   const [isGraphLoading, setGraphLoading] = useState(true)
   const [points, setPoints] = useState([])
 
-  const { name, symbol, displaySymbol, currentUSDPrice, marketCap, dailyPriceChangePercentage, totalDailyVolume, highDay, lowDay, circulatingSupply, supply } = coin
+  const { name, symbol, displaySymbol, currentUSDPrice, marketCap, hourlyPriceChangePercentage, totalDailyVolume, highDay, lowDay, supply } = coin
 
   const fetchCoinHistory = async () => {
     try {
@@ -40,10 +40,10 @@ export default observer(function ({ navigation, route }: Props) {
   const fetchCoinInfo = useCallback(async ({ currency, symbol }) => {
     try {
       const newCoinInfo = await store.coin.fetchCoinInfo({ currency, symbol })
-      if (newCoinInfo.TOSYMBOL === 'EUR') {
-        setEurPrice(newCoinInfo.PRICE)
-      } else if (newCoinInfo.TOSYMBOL === 'GBP') {
-        setGbpPrice(newCoinInfo.PRICE)
+      if (currency === 'EUR') {
+        setEurPrice(newCoinInfo.pastHour.high)
+      } else if (currency === 'GBP') {
+        setGbpPrice(newCoinInfo.pastHour.high)
       }
     } catch (err) {
       showMessage({ message: err });
@@ -73,7 +73,7 @@ export default observer(function ({ navigation, route }: Props) {
       <DetailItem value={name} titleVariant="title" />
       <DetailItem title="Symbol" value={displaySymbol} />
       <DetailItem title="Market Cap" value={marketCap} />
-      <DetailItem title="Daily Price Percentage Change" value={dailyPriceChangePercentage} />
+      <DetailItem title="Daily Price Percentage Change" value={hourlyPriceChangePercentage} />
       <DetailItem title="Total Daily Volume" value={totalDailyVolume} />
       <DetailItem title="Highest Value Today" value={highDay} />
       <DetailItem title="Lowest Value Today" value={lowDay} />
@@ -83,7 +83,6 @@ export default observer(function ({ navigation, route }: Props) {
           <DetailItem title="Price in GBP" value={gbpPrice} symbol="£" />
         </Box>}
       <DetailItem title="Price in USD" value={currentUSDPrice} />
-      <DetailItem title="Circulating supply" value={circulatingSupply} />
       <DetailItem title="Total supply" value={supply} />
       {isGraphLoading ? null : <LineChart
         //@ts-ignore

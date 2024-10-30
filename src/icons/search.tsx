@@ -1,8 +1,8 @@
 import React from 'react';
-import Svg, {Path} from 'react-native-svg';
+import Svg, { Path } from 'react-native-svg';
 import { IconProps } from './index';
 
-export default function ({selected = false, color = "#171717", size = 24, disabled}: IconProps) {
+export default function ({ selected = false, color = "#171717", size = 24, disabled }: IconProps) {
   return (
     <Svg
       width={size}

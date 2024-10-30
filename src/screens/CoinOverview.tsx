@@ -26,8 +26,13 @@ export interface paginationProps {
   enableCache?: boolean;
 }
 
+interface ExtraRenderItemProps {
+  isSaved: boolean;
+}
+
+
 interface RenderItemProps {
-  item: CoinItemProps;
+  item: CoinItemProps & ExtraRenderItemProps;
 }
 
 interface RenderItemGeneratorProps {
@@ -36,24 +41,20 @@ interface RenderItemGeneratorProps {
   onFavoritePress: ({ id }) => void;
 }
 
-export const renderItem = ({ favorites, onPress, onFavoritePress }: RenderItemGeneratorProps) => (props: RenderItemProps) => {
-  const { id, name, symbol, displaySymbol, currentUSDPrice, marketCap, dailyPriceChangePercentage, highDay, lowDay, totalDailyVolume } = props.item;
-
-  const isSaved = () => {
-    return !favorites || favorites?.has(Number(id))
-  }
+export const renderItem = ({ onPress, onFavoritePress }: RenderItemGeneratorProps) => (props: RenderItemProps) => {
+  const { id, name, symbol, displaySymbol, currentUSDPrice, marketCap, hourlyPriceChangePercentage, highDay, lowDay, totalDailyVolume, isSaved } = props.item;
 
   return <ListItem
     onPress={() => onPress({ id, name, symbol })}
     onFavoritePress={() => onFavoritePress({ id })}
-    isSaved={isSaved()}
+    isSaved={isSaved}
     id={id}
     name={name}
     symbol={symbol}
     displaySymbol={displaySymbol}
     currentUSDPrice={currentUSDPrice}
     marketCap={marketCap}
-    dailyPriceChangePercentage={dailyPriceChangePercentage}
+    hourlyPriceChangePercentage={hourlyPriceChangePercentage}
     totalDailyVolume={totalDailyVolume}
     highDay={highDay}
     lowDay={lowDay}
@@ -74,8 +75,11 @@ export default observer(function ({
     try {
       setRefreshing(true)
       const newCoins = await store.coin.fetchCoins({ page, enableCache })
-      setCoins([...coins, ...newCoins])
-      setPaginationCounter(paginationCounter + 1)
+      const mergedCoins = [...coins, ...newCoins]
+      setCoins(mergedCoins.map((coin) => ({ ...coin, isSaved: store.coin.favorites?.has(coin.id) })))
+      if (newCoins.length !== 0) {
+        setPaginationCounter(paginationCounter + 1)
+      }
     } catch (err) {
       showMessage({ message: err });
     } finally {
@@ -102,16 +106,22 @@ export default observer(function ({
   }, [paginationCounter])
 
   const onItemPress = ({ name, symbol, id }) => {
-    navigation.navigate('CoinDetail', { title: `${name} (${symbol})`, id })
+    if (store.network.isOffline) {
+      showMessage({ message: "Oh no! Looks like we've lost connection 😔" })
+    } else {
+      navigation.navigate('CoinDetail', { title: `${name} (${symbol})`, id })
+    }
   }
 
-  const onFavoritePress = ({ id }) => {
+  const onFavoritePress = useCallback(({ id }) => {
     if (store.coin.favorites.has(id)) {
       store.coin.removeCoin({ id })
     } else {
       store.coin.saveCoin({ id })
     }
-  }
+    setCoins(coins.map((coin) => ({ ...coin, isSaved: store.coin.favorites?.has(coin.id) })))
+  }, [coins, store.coin.favorites])
+
 
   return <Box
     flex={1}
@@ -121,8 +131,8 @@ export default observer(function ({
     <StatusBar barStyle="light-content" />
     <SafeAreaView flex={1} backgroundColor="primary">
       <List
-        data={coins}
-        renderItem={renderItem({ onPress: onItemPress, onFavoritePress, favorites: store.coin.favorites })}
+        data={coins.slice()}
+        renderItem={renderItem({ onPress: onItemPress, onFavoritePress })}
         onRefresh={onRefresh}
         onEndReached={onEndReached}
         refreshing={isListRefreshing}

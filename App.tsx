@@ -1,5 +1,5 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { DevSettings, LogBox } from 'react-native';
 import { TabNavigator } from 'src/navigation';
 import { MainStackParamList } from 'src/types/navigation';
@@ -66,6 +66,24 @@ function App(): React.JSX.Element {
       DevSettings.reload();
     });
   }, []);
+
+  useEffect(() => {
+    NetInfo.addEventListener(state => {
+      if (state.isInternetReachable === false) {
+        showMessage({ message: "Oh no! Looks like we've lost connection 😔" });
+        store.network.set('isOffline', true);
+        store.network.set('isShowingMessage', true);
+      } else if (
+        state.isInternetReachable === true &&
+        store.network.isOffline
+      ) {
+        showMessage({
+          message: "You're back online :)",
+        });
+        store.network.set('isOffline', false);
+      }
+    });
+  }, [store.network]);
 
   const onStateChange = async () => {
     if (store.network.isOffline && !store.network.isShowingMessage) {

@@ -14,41 +14,34 @@ import { paginationProps } from 'src/screens/CoinOverview';
 import { transformCoin, transformCoins } from 'src/utils/coin';
 import { storage } from './mmk-store';
 
-export interface CoinInfo {
-  Id: string;
-  Name: string;
+export interface PastDay {
+  high: number;
+  low: number;
 }
 
-export interface USD {
-  PRICE: number;
-  CHANGEPCT24HOUR: number;
-  MKTCAP: number;
-  FROMSYMBOL: string;
-  CIRCULATINGSUPPLY: number;
-  SUPPLY: number;
-  TOTALVOLUME24H: number;
-  HIGHDAY: number;
-  LOWDAY: number;
+export interface PastHour {
+  high: number;
+  changePct: number;
 }
 
-export interface RawUSD {
-  USD: USD;
+export interface MarketData {
+  supply: number;
+  mktCap: number;
 }
 
-export interface Display {
-  USD: USD;
+export interface VolumeData {
+  totalVolume24H: number;
 }
 
 export interface CoinResult {
- CoinInfo: CoinInfo;
- RAW?: RawUSD;
- DISPLAY?: Display;
+ id: number;
+ fullName: string;
+ name: string;
+ pastHour: PastHour;
+ pastDay: PastDay;
+ marketData: MarketData;
+ volumeData: VolumeData;
 }
-
-const PricePoint = types.model({
-  time: types.number,
-  high: types.number
-})
 
 export const Coin = types.model({
   id: types.number,
@@ -57,13 +50,11 @@ export const Coin = types.model({
   displaySymbol: types.optional(types.string, ''),
   currentUSDPrice: types.optional(types.number, 0),
   marketCap: types.optional(types.number, 0),
-  dailyPriceChangePercentage: types.optional(types.number, 0),
-  circulatingSupply: types.optional(types.number, 0),
+  hourlyPriceChangePercentage: types.optional(types.number, 0),
   supply: types.optional(types.number, 0),
   totalDailyVolume: types.optional(types.number, 0),
   highDay: types.optional(types.number, 0),
   lowDay: types.optional(types.number, 0),
-  // priceChartData: types.optional(types.array(PricePoint), []),
 });
 
 export const Currency = types.enumeration("Currency", ["USD", "EUR", "GBP"])
@@ -94,7 +85,7 @@ export const CoinStore = types
         const coinInfo = yield API.getCoinHistory({ currency: self.currency, symbol, timeframe, limit })
         return coinInfo.map(({ time, high }) => ({ value: high, date: time }));
       } catch(err) {
-        showMessage(err)
+        showMessage(err?.message || err)
       }
     })
 
@@ -103,7 +94,7 @@ export const CoinStore = types
         const coinInfo = yield API.getCoinInfo({ currency, symbol })
         return coinInfo
       } catch(err) {
-        showMessage(err)
+        showMessage(err?.message || err)
       }
     })
 
@@ -111,7 +102,7 @@ export const CoinStore = types
       try {
         self.favorites.set(id, {...self.coinMap.get(id)})
       } catch(err) {
-        showMessage(err)
+        showMessage(err?.message || err)
       }
     })
 
@@ -124,7 +115,7 @@ export const CoinStore = types
       try {
         coinResult = yield API.searchCoins({ query })
         } catch(err) {
-          showMessage(err)
+          showMessage(err?.message || err)
           throw err;
         }
       return transformCoins(coinResult, self.currency)
@@ -139,22 +130,26 @@ export const CoinStore = types
 
       try {
       coinResult = yield API.getCoins({ page })
+      
       } catch(err) {
-        showMessage(err)
-        throw err;
+        showMessage(err?.message || err)
+        return []
       }
 
       try {
         coinResult.forEach((coin: CoinResult) => {
           try {
-          self.coinMap.set(Number(coin.CoinInfo.Id), transformCoin(self.currency)(coin))
+          self.coinMap.set(Number(coin.id), transformCoin(self.currency)(coin))
           } catch(err) {
-           showMessage(err)
+           showMessage(err?.message || err)
+           
           }
         })
         } catch(err) {
-          showMessage(err)
-          throw err;
+          showMessage(err?.message || err)
+          if(err?.message === "Internal Server Error" ) {
+            return []
+          }
         }
 
       return transformCoins(coinResult, self.currency)

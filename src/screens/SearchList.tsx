@@ -51,14 +51,17 @@ export default observer(function ({
         }
     }
 
-
     const onRefresh = () => {
         setCoins([])
         searchCoins()
     }
 
     const onItemPress = ({ name, symbol, id }) => {
-        navigation.navigate('CoinDetail', { title: `${name} (${symbol})`, id })
+        if (store.network.isOffline) {
+            showMessage({ message: "Oh no! Looks like we've lost connection 😔" })
+        } else {
+            navigation.navigate('CoinDetail', { title: `${name} (${symbol})`, id })
+        }
     }
 
     const onChangeText = (value: string) => {
@@ -93,7 +96,7 @@ export default observer(function ({
             />
             <List
                 data={coins}
-                renderItem={renderItem({ onPress: onItemPress, onFavoritePress, favorites: store.coin.favorites })}
+                renderItem={renderItem({ onPress: onItemPress, onFavoritePress })}
                 onRefresh={onRefresh}
                 refreshing={isListRefreshing}
             />

@@ -1,4 +1,6 @@
-export interface IconProps {
+import { AccessibilityProps } from 'react-native/types'
+
+export interface IconProps extends AccessibilityProps {
     selected?: boolean;
     size?: number;
     color?: string;
