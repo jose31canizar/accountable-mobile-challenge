@@ -36,7 +36,7 @@ export default function ({ children, onPress, ...rest }: PropsWithChildren<Press
     const props = useRestyle(
         restyleFunctions, rest);
 
-    return <View {...props} >
+    return <RNPressable {...props} onPress={onPress}>
         {children}
-    </View>
+    </RNPressable>
 }

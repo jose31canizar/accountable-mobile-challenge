@@ -21,7 +21,7 @@ export default function ({ title, value, titleVariant = 'subtitle', symbol = "$"
       {...rest}>
       {title ? <Text variant={titleVariant} color="black">{title}</Text> : null}
       <Box flexDirection='row'>
-        {typeof value === 'number' ? <Text variant={titleVariant} color='black'>{symbol}</Text> : null}
+        {typeof value === 'number' ? <Text testID="symbol" variant={titleVariant} color='black'>{symbol}</Text> : null}
         <Text variant={titleVariant} color="black">{typeof value === 'number' ? formatFiatValue(`${value}`) : value}</Text>
       </Box>
 
