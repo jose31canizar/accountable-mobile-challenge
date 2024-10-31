@@ -1,5 +1,5 @@
 import React, { PropsWithChildren } from "react";
-import { Pressable as RNPressable } from "react-native";
+import { Pressable as RNPressable, View } from "react-native";
 import {
     useRestyle,
     spacing,
@@ -12,24 +12,23 @@ import {
     layout,
     LayoutProps,
 } from '@shopify/restyle';
-
 import { Theme } from 'src/theme';
 
-type RestyleProps = SpacingProps<Theme> &
-    LayoutProps<Theme> &
-    BorderProps<Theme> &
-    BackgroundColorProps<Theme>;
+interface RestyleProps extends SpacingProps<Theme>,
+    LayoutProps<Theme>,
+    BorderProps<Theme>,
+    BackgroundColorProps<Theme> { }
 
-type PressableProps = RestyleProps & {
+interface PressableProps extends RestyleProps {
     onPress: () => void;
 };
 
 const restyleFunctions = composeRestyleFunctions<Theme, RestyleProps>([
     spacing,
     layout,
-    // @ts-ignore
+    //@ts-ignore
     border,
-    backgroundColor,
+    backgroundColor
 ]);
 
 
@@ -37,5 +36,7 @@ export default function ({ children, onPress, ...rest }: PropsWithChildren<Press
     const props = useRestyle(
         restyleFunctions, rest);
 
-    return <RNPressable {...props}>{children}</RNPressable>
+    return <View {...props} >
+        {children}
+    </View>
 }

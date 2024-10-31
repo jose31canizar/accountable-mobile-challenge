@@ -2,8 +2,10 @@ import React from 'react';
 import Svg, { Path } from 'react-native-svg';
 import { IconProps } from './index';
 
-export default function ({ selected = false, fillColor = "none", color = "#EB9999", size = 24, disabled }: IconProps) {
-    return <Svg width={size}
+export default function ({ selected = false, fillColor = "none", color = "#EB9999", size = 24, disabled, ...rest }: IconProps) {
+    return <Svg
+        {...rest}
+        width={size}
         height={size}
         viewBox="0 0 24 24"
         fill={fillColor}>
